@@ -89,20 +89,21 @@ def get_MathJax_version():
     """
     Get the MathJax version the static and hacky way not involving javascript.
     """
-    three_file = osp.join(
-        osp.normcase(osp.dirname(osp.abspath(__file__))),
-        "..",
-        "media",
-        "js",
-        "mathjax",
-        "MathJax.js",
-    )
-    pattern = r'MathJax.version="(\d\.\d\.\d)"'
-    match = re.search(pattern, builtin_open(three_file).read())
-    if match:
-        return match.group(1)
-    else:
-        return "?.?.?"
+    return "3.2.2"
+    # three_file = osp.join(
+    #     osp.normcase(osp.dirname(osp.abspath(__file__))),
+    #     "..",
+    #     "media",
+    #     "js",
+    #     "mathjax",
+    #     "MathJax.js",
+    # )
+    # pattern = r'MathJax.version="(\d\.\d\.\d)"'
+    # match = re.search(pattern, builtin_open(three_file).read())
+    # if match:
+    #     return match.group(1)
+    # else:
+    #     return "?.?.?"
 
 
 def get_mathics_threejs_backend_data():
