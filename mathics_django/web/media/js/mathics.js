@@ -1,5 +1,6 @@
 // TODO: getSelection function
 // -*- mode: js; js-indent-level: 4; -*-
+// MathJax 3.x compatible version
 
 
 let deleting,
@@ -67,24 +68,26 @@ function getDimensions(math, callback) {
     const container = all.querySelector('.calc_container');
     container.appendChild(translateDOMElement(math));
 
-    // Note all of this will change or disappear when we upgrade to MathJax 4.0
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, container]);
-    MathJax.Hub.Queue(() => {
-	// Wrap the measurements in requestAnimationFrame
-	window.requestAnimationFrame(function() {
-            const containerOffsetLeft = container.offsetLeft,
-		  containerOffsetTop = container.offsetTop,
-		  nextOffsetLeft = all.querySelector('.calc_next').offsetLeft,
-		  belowOffsetTop = all.querySelector('.calc_below').offsetTop;
+    // MathJax 3.x uses the MathJaxObject.typesetPromise API
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise([container]).then(() => {
+            window.requestAnimationFrame(function() {
+                const containerOffsetLeft = container.offsetLeft,
+                      containerOffsetTop = container.offsetTop,
+                      nextOffsetLeft = all.querySelector('.calc_next').offsetLeft,
+                      belowOffsetTop = all.querySelector('.calc_below').offsetTop;
 
-            const width = nextOffsetLeft - containerOffsetLeft + 4,
-		  height = belowOffsetTop - containerOffsetTop + 20;
+                const width = nextOffsetLeft - containerOffsetLeft + 4,
+                      height = belowOffsetTop - containerOffsetTop + 20;
 
-            all.remove();
+                all.remove();
 
-            callback(width, height);
-	});
-    });
+                callback(width, height);
+            });
+        }).catch(err => console.log('MathJax error in getDimensions:', err));
+    } else {
+        console.warn('MathJax not available');
+    }
 }
 
 function createMathNode(nodeName) {
@@ -272,11 +275,11 @@ function createLine(value) {
     }
     if (container?.firstElementChild?.tagName === 'GRAPHICS3D') {
         const div = document.createElement('div');
-	var json_data_value = JSON.parse(container.firstElementChild.attributes.data.value);
-	div.style.backgroundColor = json_data_value["background_color"];
-	if ("tooltip_text" in json_data_value){
-	    div.title = json_data_value["tooltip_text"];
-	}
+        var json_data_value = JSON.parse(container.firstElementChild.attributes.data.value);
+        div.style.backgroundColor = json_data_value["background_color"];
+        if ("tooltip_text" in json_data_value){
+            div.title = json_data_value["tooltip_text"];
+        }
         drawGraphics3d(div, json_data_value);
 
         div.style.overflow = 'hidden';
@@ -296,12 +299,12 @@ function createLine(value) {
         const lines = container.innerText.split('\n');
         const p = document.createElement('p');
         p.className = 'string';
-	if(lines.length>1){
-	    p.style.textAlign = 'justify';
-	}
+        if(lines.length>1){
+            p.style.textAlign = 'justify';
+        }
 
         for (let i = 0; i < lines.length; i++) {
-	    newline = prepareText(lines[i]);
+            newline = prepareText(lines[i]);
             p.innerHTML += newline;
 
             if (i < lines.length - 1) {
@@ -313,37 +316,38 @@ function createLine(value) {
 }
 
 function afterProcessResult(list, command) {
-    // command is either 'Typeset' (default) or 'Rerender'
-    command ||= 'Typeset';
-
-    MathJax.Hub.Queue([command, MathJax.Hub, list]);
-    MathJax.Hub.Queue(() => {
-        // inject SVG and other non-MathML objects into corresponding <mspace>s
-        list.querySelectorAll('.mspace').forEach((mspace) => {
-	    if (mspace) {
-		const id = mspace.getAttribute('id').substr(objectsPrefix.length);
-		if (objects[id]) {
-		    mspace.appendChild(objects[id]);
-		}
-	    }
-        });
-    });
-
-    if (!MathJax.Hub.Browser.isOpera) {
-        // Opera 11.01 Build 1190 on Mac OS X 10.5.8 crashes on this call for Plot[x,{x,0,1}]
-        // => leave inner MathML untouched
-        MathJax.Hub.Queue(['Typeset', MathJax.Hub, list]);
+    // MathJax 3.x uses typesetPromise (no command parameter needed)
+    if (!window.MathJax || !window.MathJax.typesetPromise) {
+        console.warn('MathJax not available for typesetting');
+        return;
     }
 
-    MathJax.Hub.Queue(() => {
+    MathJax.typesetPromise([list]).then(() => {
+        // inject SVG and other non-MathML objects into corresponding <mspace>s
+        list.querySelectorAll('[id^="' + objectsPrefix + '"]').forEach((mspace) => {
+            if (mspace && mspace.getAttribute('id')) {
+                const id = mspace.getAttribute('id').substring(objectsPrefix.length);
+                if (objects[id]) {
+                    // Clear existing children
+                    while (mspace.firstChild) {
+                        mspace.removeChild(mspace.firstChild);
+                    }
+                    mspace.appendChild(objects[id]);
+                }
+            }
+        });
+
+        // Re-typeset after injecting objects
+        return MathJax.typesetPromise([list]);
+    }).then(() => {
         list.querySelectorAll('foreignObject > span > nobr > span.math')
             .forEach((math) => {
-                const content = math.firstChild.firstChild.firstChild;
+                if (math && math.firstChild && math.firstChild.firstChild && math.firstChild.firstChild.firstChild) {
+                    const content = math.firstChild.firstChild.firstChild;
 
-                math.removeChild(math.firstChild);
-                math.insertBefore(content, math.firstChild);
+                    math.removeChild(math.firstChild);
+                    math.insertBefore(content, math.firstChild);
 
-                if (command === 'Typeset') {
                     // recalculate positions of insets based on ox/oy properties
                     const foreignObject = math.parentNode.parentNode.parentNode;
                     if (foreignObject && math.getDimensions) {
@@ -365,7 +369,7 @@ function afterProcessResult(list, command) {
                     }
                 }
             });
-    });
+    }).catch(err => console.error('MathJax typeset error:', err));
 }
 
 function setResult(list, results) {
@@ -405,8 +409,8 @@ function setResult(list, results) {
 
         // Create and populate message's classification part...
 
-	resultList.style.display = 'block';
-	resultList.appendChild(show_out(first_out));
+        resultList.style.display = 'block';
+        resultList.appendChild(show_out(first_out));
         li.appendChild(resultList);
         list.appendChild(li);
 
@@ -464,10 +468,10 @@ function show_out(out){
     out_p = createLine(text);
     out_p.className = "out";
     if(out.message){
-	li.className = "message";
-	out_p.innerHTML = "<strong>" + out.prefix + ": </strong>" + out_p.innerHTML;
+        li.className = "message";
+        out_p.innerHTML = "<strong>" + out.prefix + ": </strong>" + out_p.innerHTML;
     }else{
-	li.className = "print";
+        li.className = "print";
     }
     li.appendChild(out_p);
     return li;
@@ -537,7 +541,7 @@ function submitQuery(element, onfinish, query) {
             };
         },
         onFailure: () => {
-	    queryInProgress = false;
+            queryInProgress = false;
             element?.ul.select('li[class!=request]')
                 .forEach((element) => element.remove());
 
@@ -549,7 +553,7 @@ function submitQuery(element, onfinish, query) {
             element.submitted = true;
         },
         onComplete: () => {
-	    queryInProgress = false;
+            queryInProgress = false;
             element?.li.classList.remove('loading');
             document.getElementById('logo')?.classList.remove('working');
 
@@ -863,28 +867,20 @@ function globalKeyUp(event) {
 }
 
 function domLoaded() {
-    MathJax.Hub.Config({
-	tex2jax:{inlineMath: [['$','$'], ['\\(','\\)']]},
-        'HTML-CSS': {
-            imageFont: null,
-            linebreaks: {
-                automatic: true,
-                width: '70% container'
-            }
-        },
-        MMLorHTML: {
-            // the output jax that is to be preferred when both are possible
-            // (set to 'MML' for native MathML, 'HTML' for MathJax's HTML-CSS output jax).
-            prefer: {
-                MSIE: 'HTML',
-                Firefox: 'HTML',
-                Opera: 'HTML',
-                other: 'HTML'
-            }
-        }
-    });
+    // MathJax 3.x configuration
+    // MathJax 3 expects this to be set BEFORE the script is loaded,
+    // but we set it here as well for safety
+    if (!window.MathJax) {
+        window.MathJax = {};
+    }
 
-    MathJax.Hub.Configured();
+    // Configure MathJax 3.x
+    window.MathJax.tex = window.MathJax.tex || {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+    };
 
     if (localStorage.getItem('hideMathicsStartupMsg') === 'true') {
         const welcome = document.getElementById('welcome');
