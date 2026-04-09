@@ -46,9 +46,6 @@ def format_output(evaluation, expr, html_tag_format=None):
     specific capabilities.
     """
 
-    if html_tag_format is None:
-        html_tag_format = evaluation.format
-
     if html_tag_format == "unformatted":
         evaluation.exc_result = None
         return expr
