@@ -41,8 +41,16 @@
 	<script type="text/javascript" src="{% static 'js/doc.js' %}"></script>
 
 	<!-- MathJax 3.2.2 Configuration -->
+
 	<script>
 	  window.MathJax = {
+	    startup: {
+	      ready: function() {
+	        MathJax.startup.defaultReady();
+	        // Ensure menu is available
+	        MathJax.typesetPromise = MathJax.typesetPromise || MathJax.typeset;
+	      }
+	    },
 	    tex: {
 	      inlineMath: [['$', '$'], ['\\(', '\\)']],
 	      displayMath: [['$$', '$$'], ['\\[', '\\]']],
@@ -50,6 +58,9 @@
 	    },
 	    svg: {
 	      fontCache: 'global'
+	    },
+	    options: {
+	      enableMenu: true
 	    }
 	  };
 	</script>

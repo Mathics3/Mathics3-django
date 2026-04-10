@@ -67,7 +67,7 @@ function getDimensions(math, callback) {
     const container = all.querySelector('.calc_container');
     container.appendChild(translateDOMElement(math));
 
-    // MathJax 4.0 uses the modern promise-based API
+    // MathJax 3.2.2 uses the promise-based API
     MathJax.typesetPromise([container]).then(() => {
         window.requestAnimationFrame(function() {
             const containerOffsetLeft = container.offsetLeft,
@@ -95,11 +95,84 @@ function createMathNode(nodeName) {
 
 let objectsPrefix = 'math_object_', objectsCount = 0, objects = {};
 
+function createLine(value) {
+    const container = document.createElement('div');
+    container.innerHTML = value;
+
+    if (container?.firstElementChild?.tagName === 'math') {
+        // Let translateDOMElement handle it - it will preserve MathML if there are no graphics
+        return translateDOMElement(container.firstChild);
+    }
+    if (container?.firstElementChild?.tagName === 'GRAPHICS3D') {
+        const div = document.createElement('div');
+        var json_data_value = JSON.parse(container.firstElementChild.attributes.data.value);
+        div.style.backgroundColor = json_data_value["background_color"];
+        if ("tooltip_text" in json_data_value){
+            div.title = json_data_value["tooltip_text"];
+        }
+        drawGraphics3d(div, json_data_value);
+
+        div.style.overflow = 'hidden';
+        div.style.position = 'relative';
+        div.style.margin = 'auto';
+
+        return div;
+    }
+
+    if (container?.firstElementChild?.tagName === 'svg') {
+        container.firstElementChild.style.display = 'block';
+        container.firstElementChild.style.width = '100%';
+        container.firstElementChild.style.maxWidth = '400px';
+        container.firstElementChild.style.margin = 'auto';
+
+        return container;
+    } else {
+        const lines = container.innerText.split('\n');
+        const p = document.createElement('p');
+        p.className = 'string';
+        if(lines.length>1){
+            p.style.textAlign = 'justify';
+        }
+
+        for (let i = 0; i < lines.length; i++) {
+            newline = prepareText(lines[i]);
+            p.innerHTML += newline;
+
+            if (i < lines.length - 1) {
+                p.appendChild(document.createElement('br'));
+            }
+        }
+        return p;
+    }
+}
+
 function translateDOMElement(element, svg) {
     if (element.nodeType === 3) {
         return document.createTextNode(element.nodeValue);
     }
+
     const nodeName = element.nodeName;
+
+    // Check if this is pure MathML without embedded graphics
+    const hasMathMLOnly = (el) => {
+        for (let child of el.childNodes) {
+            const name = child.nodeName;
+            if (name === 'graphics3d' || name === 'meshgradient') {
+                return false;
+            }
+            if (child.nodeType === 1) { // Element node
+                if (!hasMathMLOnly(child)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
+    // If this is a math element with no embedded graphics, clone it as-is for MathJax to render
+    if (nodeName === 'math' && hasMathMLOnly(element)) {
+        return element.cloneNode(true);
+    }
 
     let dom = null;
 
@@ -222,8 +295,6 @@ function translateDOMElement(element, svg) {
                     // wrap element in mtext
                     const outer = createMathNode('mtext');
                     outer.appendChild(elmt);
-
-                    elmt = outer;
                 }
 
                 mtd.appendChild(elmt);
@@ -259,99 +330,22 @@ function translateDOMElement(element, svg) {
     return dom;
 }
 
-function createLine(value) {
-    const container = document.createElement('div');
-    container.innerHTML = value;
-    if (container?.firstElementChild?.tagName === 'math') {
-        return translateDOMElement(container.firstChild);
-    }
-    if (container?.firstElementChild?.tagName === 'GRAPHICS3D') {
-        const div = document.createElement('div');
-        var json_data_value = JSON.parse(container.firstElementChild.attributes.data.value);
-        div.style.backgroundColor = json_data_value["background_color"];
-        if ("tooltip_text" in json_data_value){
-            div.title = json_data_value["tooltip_text"];
-        }
-        drawGraphics3d(div, json_data_value);
-
-        div.style.overflow = 'hidden';
-        div.style.position = 'relative';
-        div.style.margin = 'auto';
-
-        return div;
-    }
-    if (container?.firstElementChild?.tagName === 'svg') {
-        container.firstElementChild.style.display = 'block';
-        container.firstElementChild.style.width = '100%';
-        container.firstElementChild.style.maxWidth = '400px';
-        container.firstElementChild.style.margin = 'auto';
-
-        return container;
-    } else {
-        const lines = container.innerText.split('\n');
-        const p = document.createElement('p');
-        p.className = 'string';
-        if(lines.length>1){
-            p.style.textAlign = 'justify';
-        }
-
-        for (let i = 0; i < lines.length; i++) {
-            newline = prepareText(lines[i]);
-            p.innerHTML += newline;
-
-            if (i < lines.length - 1) {
-                p.appendChild(document.createElement('br'));
-            }
-        }
-        return p;
-    }
-}
-
 function afterProcessResult(list, command) {
     // command is either 'typeset' (default) or 'rerender'
-    // MathJax 4.0 uses lowercase method names
     command ||= 'typeset';
 
+    // Typeset all math in the list - MathJax 3.x will automatically detect and render <math> tags
     MathJax.typesetPromise([list]).then(() => {
         // inject SVG and other non-MathML objects into corresponding <mspace>s
         list.querySelectorAll('.mspace').forEach((mspace) => {
             if (mspace) {
                 const id = mspace.getAttribute('id').substr(objectsPrefix.length);
 
-                mspace.appendChild(objects[id]);
+                if (objects[id]) {
+                    mspace.appendChild(objects[id]);
+                }
             }
         });
-    }).catch(err => console.log(err));
-
-    // Re-typeset after injecting objects
-    MathJax.typesetPromise([list]).then(() => {
-        list.querySelectorAll('foreignObject > span > nobr > span.math')
-            .forEach((math) => {
-                const content = math.firstChild.firstChild.firstChild;
-
-                math.removeChild(math.firstChild);
-                math.insertBefore(content, math.firstChild);
-
-                if (command === 'typeset') {
-                    // recalculate positions of insets based on ox/oy properties
-                    const foreignObject = math.parentNode.parentNode.parentNode,
-                          dimensions = math.getDimensions();
-
-                    const ox = parseFloat(foreignObject.getAttribute('ox')),
-                          oy = parseFloat(foreignObject.getAttribute('oy')),
-                          width = dimensions.width + 4,
-                          height = dimensions.height + 4;
-
-                    let x = parseFloat(foreignObject.getAttribute('x').substr()),
-                        y = parseFloat(foreignObject.getAttribute('y'));
-
-                    x = x - width / 2.0 - ox * width / 2.0;
-                    y = y - height / 2.0 + oy * height / 2.0;
-
-                    foreignObject.setAttribute('x', x + 'px');
-                    foreignObject.setAttribute('y', y + 'px');
-                }
-            });
     }).catch(err => console.log(err));
 }
 
@@ -850,18 +844,7 @@ function globalKeyUp(event) {
 }
 
 function domLoaded() {
-    // MathJax 3.2.2 Configuration
-    // The configuration object and setup must be done before loading MathJax
-    window.MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']],
-            displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            processEscapes: true
-        },
-        svg: {
-            fontCache: 'global'
-        }
-    };
+    // MathJax 3.2.2 is configured in base_html.html
 
     if (localStorage.getItem('hideMathicsStartupMsg') === 'true') {
         const welcome = document.getElementById('welcome');
