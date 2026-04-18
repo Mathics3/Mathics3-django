@@ -95,18 +95,9 @@ runserver: $(THREEJS)
 runserver-debug: $(THREEJS)
 	MATHICS3_DJANGO_DEBUG=true MATHICS3_DJANGO_DISPLAY_EXCEPTIONS=true MATHICS3_DJANGO_LOG_ON_CONSOLE=true $(PYTHON) mathics_django/manage.py runserver $o
 
-#: Remove ChangeLog
-rmChangeLog:
-	$(RM) ChangeLog || true
-
 #: Run Django-based server in testserver mode. Use environment variable "o" for manage options
 testserver: $(THREEJS)
 	$(PYTHON) mathics_django/manage.py testserver $o
-
-#: Create a ChangeLog from git via git log and git2cl
-ChangeLog: rmChangeLog
-	git log --pretty --numstat --summary | $(GIT2CL) >$@
-	patch ChangeLog < ChangeLog-spell-corrected.diff
 
 node_modules/\@mathicsorg/mathics-threejs-backend/package.json node_modules/@mathicsorg/mathics-threejs-backend/package.json:
 	npm install @mathicsorg/mathics-threejs-backend --loglevel=error
@@ -119,3 +110,15 @@ build_mathics-threejs-backend: node_modules/\@mathicsorg/mathics-threejs-backend
 
 $(THREEJS): node_modules/@mathicsorg/mathics-threejs-backend/package.json package.json
 	$(MAKE) build_mathics-threejs-backend
+
+#: Create ChangeLog from version control without corrections
+ChangeLog-without-corrections:
+	git log --pretty --numstat --summary | $(GIT2CL) >ChangeLog
+
+#: Remove ChangeLog
+rmChangeLog:
+	$(RM) ChangeLog || true
+
+#: Create a ChangeLog from git via git log and git2cl
+ChangeLog: rmChangeLog
+	patch -p0 ChangeLog < ChangeLog-spell-corrected.diff
