@@ -120,5 +120,5 @@ rmChangeLog:
 	$(RM) ChangeLog || true
 
 #: Create a ChangeLog from git via git log and git2cl
-ChangeLog: rmChangeLog
+ChangeLog: rmChangeLog ChangeLog-without-corrections
 	patch -p0 ChangeLog < ChangeLog-spell-corrected.diff
