@@ -9,4 +9,5 @@ recursive-include mathics_django *.py
 recursive-include mathics_django/autoload *.m
 recursive-include mathics_django/web/doc *.pcl
 recursive-include mathics_django/web/media *
+recursive-include mathics_django/web/templates *
 recursive-include test *.py
