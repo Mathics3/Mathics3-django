@@ -61,16 +61,19 @@ Mathics3server = "mathics_django.manage:main"
 Homepage = "https://mathics.org/"
 
 [tool.setuptools.package-data]
-include = [
-    "mathics_django/autoload/*.m",
-    "mathics_django/doc/*.pcl",
-    "mathics_django/web/media/css/*.css",
-    "mathics_django/web/media/img/**/*",
-    "mathics_django/web/media/fonts/**/*",
-    "mathics_django/web/media/js/**/*.js",
-    "mathics_django/web/media/js/mathics-threejs-backend/**/*",
-    "mathics_django/web/templates/**/*.html",
-    "mathics_django/web/media/js/mathjax/**/*"
+"mathics_django" = [
+    "autoload/*.m",
+    "doc/*.pcl",
+    "web/media/css/*.css",
+    "web/media/doc/*.png",
+    "web/media/img/*",
+    "web/media/img/favicons/*",
+    "web/media/fonts/*",
+    "web/media/js/*.js",
+    "web/media/js/**/*.js",
+    "web/media/js/mathics-threejs-backend/**/*",
+    "web/templates/**/*.html",
+    "web/media/js/mathjax/**/*"
 ]
 
 [tool.setuptools.dynamic]
