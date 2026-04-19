@@ -25,16 +25,16 @@ jobs:
     - name: Install Python dependencies
       run: |
         # Can adjust when next Mathics3 is released
-        git clone --depth 1 https://github.com/Mathics3/Mathics3-scanner.git
-        cd Mathics3-scanner/
-        pip install -e .
-        bash -x admin-tools/make-JSON-tables.sh
-        cd ..
-        git clone --depth 1 https://github.com/Mathics3/mathics-core.git
-        cd mathics-core/
-        pip install -e . --no-build-isolation
-        bash -x admin-tools/make-JSON-tables.sh
-        cd ..
+        # git clone --depth 1 https://github.com/Mathics3/Mathics3-scanner.git
+        # cd Mathics3-scanner/
+        # pip install -e .
+        # bash -x admin-tools/make-JSON-tables.sh
+        # cd ..
+        # git clone --depth 1 https://github.com/Mathics3/mathics-core.git
+        # cd mathics-core/
+        # pip install -e . --no-build-isolation
+        # bash -x admin-tools/make-JSON-tables.sh
+        # cd ..
         npm install
     - name: Install Mathics3 Django
       run: |

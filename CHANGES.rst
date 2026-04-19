@@ -14,7 +14,6 @@ Supports Python 3.14. Python 3.10 support dropped. Python 3.10 may still work, b
 * Supports mathics-threejs-backend 1.3.2 (fixes a bug in point size handling)
 * Support for production ASGI server via Daphne
 * Reduce javascript console warnings
-* Update to threejs-mathics-backend which fixes a bug in displaying small 3D points
 
 
 9.0.0
