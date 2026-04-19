@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 if __name__ == "__main__":
     setup(
-        packages=["mathics_django"],
-        include_package_data=True,
+        packages=find_packages(),
+        include_package_data=False,
         package_data={
             "mathics_django": [
-                "autoload/*.m",
+                "autoload/settings.m",
+                "doc/",
                 "doc/*.pcl",
                 "web/media/css/*.css",
                 "web/media/doc/*.png",

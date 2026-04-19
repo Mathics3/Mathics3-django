@@ -87,7 +87,7 @@ To get a list of the available commands, type::
 
    python  mathics_django/manage.py help
 
-To get help on a specific command, give that command at the end. For example, two useful commands are the ``runserver`` and ``testserver`` commands:: 
+To get help on a specific command, give that command at the end. For example, two useful commands are the ``runserver`` and ``testserver`` commands::
 
    python mathics_django/manage.py help runserver
 
@@ -135,4 +135,4 @@ Mathics3-django is released under the GNU General Public License Version 3 (GPL3
 		       :target: https://github.com/Mathics3/mathics-django/actions
 .. |Packaging status| image:: https://repology.org/badge/vertical-allrepos/mathics-django.svg
 			    :target: https://repology.org/project/mathics-django/versions
-.. |Pypi Installs| image:: https://pepy.tech/badge/mathics-django
+.. |PyPI Installs| image:: https://pepy.tech/badge/mathics-django

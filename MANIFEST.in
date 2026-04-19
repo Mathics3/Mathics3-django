@@ -3,11 +3,11 @@ include COPYING.txt
 include ChangeLog
 include Makefile
 include README.rst
+include mathics_django/autoload/settings.m
 include mathics_django/Makefile
 include requirements-full.txt
+exclude mathics_django/autoload
 recursive-include mathics_django *.py
-recursive-include mathics_django/autoload *.m
-recursive-include mathics_django/web/doc *.pcl
 recursive-include mathics_django/web/media *
 recursive-include mathics_django/web/templates *
 recursive-include test *.py
