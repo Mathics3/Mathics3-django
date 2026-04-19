@@ -14,6 +14,7 @@ RM  ?= rm
 MATHICS3_MODULE_OPTION ?= --load-module pymathics.graph,pymathics.natlang
 
 .PHONY: all build \
+	ChangeLog-without-corrections \
 	check clean \
 	develop \
         dist \
@@ -25,6 +26,7 @@ MATHICS3_MODULE_OPTION ?= --load-module pymathics.graph,pymathics.natlang
 	rmChangeLog \
 	runserver \
 	runserver-debug \
+	runserver-production \
 	test
 
 THREEJS=mathics_django/web/media/js/mathics-threejs-backend/index.js mathics_django/web/media/js/mathics-threejs-backend/version.json
