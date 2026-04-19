@@ -1,6 +1,19 @@
 CHANGES
 =======
 
+10.0.0
+------
+
+Supports Python 3.14. Python 3.10 support dropped. (Python 3.10 may still work, but it's not supported.)
+
+* renamed to Mathics3-django; Mathics3 logo (re)created
+* Adjust for 10.0.0 API and changes to Boxing output.
+* Added TeXForm rendering controlled by Settings`$RenderTeXForm
+* Supports mathics-threejs-backend 1.3.2 (fixes a bug in point size handling)
+* Support for production ASGI server via dahpne
+* Reduce javascript console warnings
+
+
 9.0.0
 -----
 
@@ -10,6 +23,7 @@ Aug 29, 2025
 * Adjust for 9.0.0 Mathics3 Kernel API.
 * Adjust tests gallery
 * Add to bottom of docs next/prev
+* Better sandboxed mode and proxy mode (Adam Boutcher)
 
 Bugs
 ----
