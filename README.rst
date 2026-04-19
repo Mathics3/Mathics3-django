@@ -132,7 +132,7 @@ Mathics3-django is released under the GNU General Public License Version 3 (GPL3
 		 :target: https://badge.fury.io/py/Mathics3-django
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/Mathics3-django.svg
 .. |CI status| image:: https://github.com/Mathics3/mathics-django/workflows/Mathics3-django%20(ubuntu)/badge.svg
-		       :target: https://github.com/Mathics3/mathics-django/actions
+		       :target: https://github.com/Mathics3/mathics3-django/actions
 .. |Packaging status| image:: https://repology.org/badge/vertical-allrepos/mathics3-django.svg
 			    :target: https://repology.org/project/mathics3-django/versions
 .. |PyPI Installs| image:: https://pepy.tech/badge/mathics3-django
