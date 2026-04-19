@@ -8,6 +8,10 @@ include mathics_django/Makefile
 include requirements-full.txt
 exclude mathics_django/autoload
 recursive-include mathics_django *.py
+recursive-include mathics_django/web *.py
+recursive-include mathics_django/web/controllers *.py
 recursive-include mathics_django/web/media *
+recursive-include mathics_django/web/migrations *.py
 recursive-include mathics_django/web/templates *
+recursive-include mathics_django/web/templatetags *.py
 recursive-include test *.py
