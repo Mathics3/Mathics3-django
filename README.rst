@@ -38,7 +38,7 @@ This package needs a working Mathics3 core engine, installed as well as a recent
 See the `Installing Mathics3 <https://mathics-development-guide.readthedocs.io/en/latest/installing.html>`_ for instructions on installing Mathics3.
 
 If you are a novice at installing Python packages, consider using either a pre-built OS package if available under "Packaging status" above,
-or the `mathics docker image <https://hub.docker.com/r/mathicsorg/mathics>`_.
+or the `Mathics3 docker image <https://hub.docker.com/r/mathicsorg/mathics>`_.
 
 
 Ubuntu/Debian Specific OS dependent packages
@@ -84,8 +84,6 @@ To run Mathics3 Django in production mode and you have the Django ASGI server `D
 To get a list of the available Django commands, type::
 
    Mathics3Server help
-
-will show options for running the Django server.
 
 To get help on a specific Django command, give that command at the end. For example, two useful commands are the ``runserver`` and ``testserver`` commands::
 
