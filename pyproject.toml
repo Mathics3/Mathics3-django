@@ -55,7 +55,7 @@ production = [
 
 
 [project.scripts]
-Mathics3server = "mathics_django.manage:main"
+Mathics3Server = "mathics_django.manage:main"
 
 [project.urls]
 Homepage = "https://mathics.org/"

@@ -14,6 +14,7 @@ Supports Python 3.14. Python 3.10 support dropped. Python 3.10 may still work, b
 * Supports mathics-threejs-backend 1.3.3 (fixes a bug in point size handling) and three.js r184
 * Support for production ASGI server via Daphne
 * Reduce javascript console warnings
+* Mathics3Server command-line program added to run Django manage.py
 
 
 9.0.0

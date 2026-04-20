@@ -67,38 +67,41 @@ From the place root directory where GitHub was checked out::
 Running
 -------
 
-This is a Django project, so Django's `manage.py <https://docs.djangoproject.com/en/3.2/ref/django-admin/>`_ script is used.
+This is a Django project, so Django's `manage.py <https://docs.djangoproject.com/en/6.0/ref/django-admin/>`_ script is used.
 
-A simple way to start Mathics3 Django when GNU make is installed (which is the case on most POSIX systems):
+To start the webserver:
 
 ::
 
-   make runserver
+   Mathics3Server
 
 This runs the server in development mode. Here, when changes to the source code are made, the running server detects them and reloads the modified source.
 
 To run Mathics3 Django in production mode and you have the Django ASGI server `Daphne <https://pypi.org/project/daphne/>`_ installed, run::
 
-   make runserver-production
+   Mathics3Server --production
 
-In either case, this runs the Python program ``manage.py`` in ``mathics_django`` directory.
+To get a list of the available Django commands, type::
 
-To get a list of the available commands, type::
-
-   python  mathics_django/manage.py help
-
-To get help on a specific command, give that command at the end. For example, two useful commands are the ``runserver`` and ``testserver`` commands::
-
-   python mathics_django/manage.py help runserver
+   Mathics3Server help
 
 will show options for running the Django server.
 
-Once the server is started, you will see a URL listed that looks like this::
+To get help on a specific Django command, give that command at the end. For example, two useful commands are the ``runserver`` and ``testserver`` commands::
 
-   Starting development server at http://127.0.0.1:8000/
+   python mathics_django/manage.py help runserver
+
+To get a list of the available options for the Mathics3 Webserver, type::
+
+   Mathics3Server --help
+
+Once the server is started, you will see a URL listed that might look like this::
+
+   ...
+   Starting development server at http://localhost:8000/
    Quit the server with CONTROL-C.
 
-Point your browser to the URL listed above. Here it is ``http://127.0.0.1:8000``
+Point your browser to the URL listed above. Here it is ``http://localhost:8000``
 
 Environment Variables
 +++++++++++++++++++++
