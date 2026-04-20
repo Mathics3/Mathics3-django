@@ -19,7 +19,7 @@ MATHICS3_MODULE_OPTION ?= --load-module pymathics.graph,pymathics.natlang
 	develop \
         dist \
         doc \
-        doctest-data \
+        doctest-html-data \
         djangotest \
         docker \
 	gstest pytest \
@@ -75,11 +75,11 @@ doctest: $(THREEJS)
 	MATHICS_CHARACTER_ENCODING=$(MATHICS_CHARACTER_ENCODING) MATHICS3_SANDBOX=$(MATHICS3_SANDBOX) $(PYTHON) mathics_django/docpipeline.py $o
 
 #: Create doctest test data and test results that is used in online documentation
-doctest-data:
+doctest-html-data:
 	MATHICS_CHARACTER_ENCODING="UTF-8"  $(PYTHON) mathics_django/docpipeline.py --output --keep-going $(MATHICS3_MODULE_OPTION)
 
-#: Create doctest test data with all modules
-doctest-data-full:
+#: Create doctest test data in HTML format including all Mathics3 Modules
+doctest-html-data-full:
 	MATHICS_CHARACTER_ENCODING="UTF-8"  $(PYTHON) mathics_django/docpipeline.py --output --keep-going $(MATHICS3_MODULE_OPTION)
 #: Install Mathics-Django
 install: $(THREEJS)
