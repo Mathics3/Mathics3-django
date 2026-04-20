@@ -6,6 +6,12 @@ import sys
 
 from django.core.management import execute_from_command_line
 
+# Import the version from your package
+try:
+    from mathics_django.version import __version__ as mathics_version
+except ImportError:
+    mathics_version = "unknown"
+
 
 def main():
     """
@@ -14,6 +20,10 @@ def main():
     # Process options
     parser = argparse.ArgumentParser(
         prog="Mathics3Server", description="Run the Mathics3 Django webserver."
+    )
+
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {mathics_version}"
     )
     parser.add_argument(
         "--debug", action="store_true", help="Set DEBUG to True in settings"
