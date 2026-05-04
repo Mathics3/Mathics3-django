@@ -20,11 +20,11 @@ source mathics_django/version.py
 echo $__version__
 
 cp -v ${HOME}/.local/var/Mathics3/doc_html_data.pcl mathics_django/doc/
-pyversion=3.13
+pyversion=3.14
 if ! pyenv local $pyversion ; then
     exit $?
 fi
 rm -fr build
 python -m build --wheel
-python ./setup.py sdist
+python -m build --sdist
 finish

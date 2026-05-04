@@ -2,6 +2,8 @@
 Format Mathics3 objects
 """
 
+from typing import Dict, Final
+
 from mathics.core.atoms import String
 from mathics.core.systemsymbols import (
     SymbolAborted,
@@ -17,7 +19,7 @@ from mathics.format.box import format_element
 # text is the usual text-kind of output.
 # LaTeX is handled by MathJaX display mode $$ $$
 # MathML could be tagged differently too.
-FORM_TO_HTML_TAG_FORMAT = {
+FORM_TO_HTML_TAG_FORMAT: Final[Dict[str, str]] = {
     "System`FullForm": "text",
     "System`InputForm": "text",
     # "System`MathMLForm": "MathML",
