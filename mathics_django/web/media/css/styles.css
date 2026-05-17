@@ -424,6 +424,7 @@ a.pdf {
   padding-bottom: 50px;
   padding-left: 0;
   position: relative;
+  text-align: left;
 }
 
 #queries li {
@@ -571,6 +572,8 @@ ul.out {
   padding: 0;
   font-family: monospace;
   font-size: 1em;
+  text-align: left;
+
 }
 
 li.serverError,
@@ -764,7 +767,7 @@ div.filelist table a:hover {
 
 p.string {
 	color: #661515;
-	text-align: center;
+	text-align: left;
 }
 
 
@@ -779,4 +782,9 @@ character of math is rendered.
     contain: layout;
     /* This prevents horizontal jumps */
     overflow: hidden;
+}
+
+#queries li {
+  text-align: left;
+
 }
